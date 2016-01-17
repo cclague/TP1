@@ -1,0 +1,47 @@
+--create table #temp
+--( col1	int, col2 char(5), col3 int)
+--insert into #temp
+--values(1,'a',4),
+--(2,'f',10),
+--(3,'a',12),
+--(4,'ehrt',1),
+--(5,'jk',64),
+--(6,'cxn',34),
+--(7,'fm',31),
+--(8,'fyku',987),
+--(9,'giu',34),
+--(10,'adfg',24)
+--go
+;with
+cteTemp
+as (select a.col1,
+			a.col2,
+			a.col3,
+			row_val=row_number() over( order by a.col1)
+	from #temp a
+),
+cteFred
+as (select a.col1,
+			a.col2,
+			a.col3,
+			a.row_val,
+			level=0,
+			thisvalue=a.col3
+	from cteTemp a
+	where a.row_val=1
+	union all
+	select b.col1,
+			f.col2,
+			b.col3,
+			b.row_val,
+			f.level +1,
+			(f.thisvalue + b.col3)*2
+	from cteTemp b
+	join cteFred	f	on f.row_val=b.row_val - 1
+	where b.row_val <=5
+)
+select *
+from cteFred
+
+
+			
